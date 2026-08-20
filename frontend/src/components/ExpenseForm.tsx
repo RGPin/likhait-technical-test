@@ -2,11 +2,12 @@
  * Form component for adding/editing expenses
  */
 
-import React from "react";
-import { ExpenseFormData } from "../types";
-import { EXPENSE_CATEGORIES } from "../constants/categories";
+import React, { useState, useEffect } from "react";
+import { Category, ExpenseFormData } from "../types";
 import { TextField, SelectBox, Button } from "../vibes";
 import { useExpenseForm } from "../hooks/useExpenseForm";
+import { fetchCategories } from "../services/api";
+import { getToday } from "../utils/expenseUtils";
 
 interface ExpenseFormProps {
   initialData?: Partial<ExpenseFormData>;
@@ -26,6 +27,8 @@ export function ExpenseForm({
       initialData,
       onSubmit,
     });
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
   const formStyle: React.CSSProperties = {
     display: "flex",
@@ -39,9 +42,25 @@ export function ExpenseForm({
     marginTop: "0.5rem",
   };
 
-  const categoryOptions = EXPENSE_CATEGORIES.map((category) => ({
-    value: category,
-    label: category,
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories();
+
+        if (data.length > 0) setCategories(data);
+      } catch (err) {
+        console.error("Failed to load categories from database:", err);
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  const categoryOptions = categories.map((category) => ({
+    value: category.name,
+    label: category.name,
   }));
 
   return (
@@ -82,6 +101,7 @@ export function ExpenseForm({
       <TextField
         label="Date"
         type="date"
+        max={getToday()}
         value={formData.date}
         onChange={(e) => handleChange("date", e.target.value)}
         error={errors.date}
