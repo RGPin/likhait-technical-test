@@ -28,6 +28,10 @@ export function formatDate(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+export function getToday(): string {
+  return formatDate(new Date());
+}
+
 /**
  * Get days in month
  */
