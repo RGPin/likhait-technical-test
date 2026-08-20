@@ -65,6 +65,7 @@ export async function createExpense(data: ExpenseFormData): Promise<Expense> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     body: JSON.stringify({ expense: expenseData }),
   });
