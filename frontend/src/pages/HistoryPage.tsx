@@ -8,11 +8,13 @@ import { CalendarExpenseTable } from "../components/CalendarExpenseTable";
 import { ExpenseForm } from "../components/ExpenseForm";
 import { Modal, Button } from "../vibes";
 import { COLORS } from "../constants/colors";
+import { CategoryForm } from "../components/CategoryForm";
 
 const HistoryPage: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   // Get year and month from URL params, default to current date if not provided
   const getInitialYearMonth = () => {
@@ -138,6 +140,11 @@ const HistoryPage: React.FC = () => {
     color: COLORS.secondary.s08,
   };
 
+  const actions: React.CSSProperties = {
+    display: "flex",
+    gap: "10px",
+  };
+
   return (
     <div style={pageStyle}>
       <div style={headerStyle}>
@@ -148,9 +155,17 @@ const HistoryPage: React.FC = () => {
             onYearChange={handleYearChange}
           />
         </div>
-        <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-          Add Expense
-        </Button>
+        <div style={actions}>
+          <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+            Add Expense
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => setIsCategoryModalOpen(true)}
+          >
+            Add Category
+          </Button>
+        </div>
       </div>
 
       <MonthNavigation
@@ -187,6 +202,20 @@ const HistoryPage: React.FC = () => {
         <ExpenseForm
           onSubmit={handleAddExpense}
           onCancel={() => setIsModalOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        title="Add New Category"
+      >
+        <CategoryForm
+          onSuccess={(newCategory) => {
+            // You can notify the user or refresh page/state here
+            alert(`Category "${newCategory.name}" created successfully!`);
+          }}
+          onCancel={() => setIsCategoryModalOpen(false)}
         />
       </Modal>
     </div>
